@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTWriter</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        body {
+            padding-top: 56px;
+        }
+        footer {
+            background-color: #f8f9fa;
+            padding: 25px 0;
+            text-align: center;
+        }
+
+        .card {
+            margin: 10px;
+        }
+
+        .ontology-items span {
+            border-radius: 4px;
+            background: #aaa;
+            color: #fff;
+            margin: 4px;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <script th:inline="javascript">
+        /* Iniettare la mappa dal backend in una variabile JavaScript */
+        var ontologies = /*[[${ontologiesMap}]]*/ {};
+        console.log(ontologies); // Questo stamperà la mappa dal backend nella console
+
+        // Se vuoi lavorare con la mappa come oggetto JavaScript
+        var mapAsObject = JSON.parse(/*[[${ontologies ? ${#json.stringify(ontologies)} : '{}'}]]*/ '{}');
+        console.log(mapAsObject); // Questo stamperà la mappa convertita in oggetto JavaScript
+
+        function updateModal(categoryId, categoryName) {
+            console.log(categoryId + ": " + categoryName);
+
+            // set hidden input
+            document.getElementsByClassName("categoryId")[0].value = categoryId;
+
+            // set ontology
+            ont = ontologies[categoryName];
+
+            for(i = 0; i < ont.length; i++) {
+                var newChild = document.createElement('span');
+                newChild.textContent = ont[i];
+                document.getElementsByClassName("ontology-items")[0].appendChild(newChild);
+            }
+        }
+    </script>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="#">CopywriterGPT</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{'/refresh'}">Refresh</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="modal fade" id="newTemplateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create new prompt template</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{'/templates'}" th:object="${newPromptForm}" method="post">
+                <div class="modal-body">
+
+                        <input type="hidden" class="categoryId" th:field="*{categoryId}">
+                        <div style="margin-top: 5px;"><input type="text" class="form-control" placeholder="Prompt name" th:field="*{name}"></div>
+                        <div style="margin-top: 5px;"><textarea class="form-control" rows="3" placeholder="Prompt content" th:field="*{content}"></textarea></div>
+
+                    <div class="ontology-items" style="margin-top: 5px;">
+                        <!--<span>ontology_item</span>-->
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="mt-5">Welcome to CopywriterGPT</h1>
+                <p class="lead">Your articles. Simpler.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+            <div class="row" th:each="category : ${categories}">
+
+                <div class="row">
+                    <h2 th:text="${category.name}">Category</h2>
+                </div><br>
+
+                <div class="row" style="margin-top: 40px;">
+                <div class="card" th:each="template : ${category.templates}">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" th:text="${template.name}">
+                                Prompt name
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body" th:text="${template.content}">
+                            Prompt content
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="modal" data-target="#newTemplateModal" aria-expanded="true" aria-controls="collapseOne"
+                                    th:attr="onclick=|updateModal('${category.id}', '${category.name}')|">
+                                Create new template
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+
+                    </div>
+                </div>
+                </div>
+
+            </div>
+
+    </div>
+
+    </div>
+
+    <br>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <span class="text-muted">&copy; 2024 CopywriterGPT. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

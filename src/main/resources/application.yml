@@ -1,0 +1,38 @@
+spring:
+  config:
+    activate:
+      on-profile: default
+  application:
+    name: ChatgptCopy
+
+endpoints:
+  url:
+    webpipes: http://api-gateway:8080/dim
+    chatgpt: http://chatgpt:5000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/webpipes?currentSchema=writer
+    password: postgres
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: create-drop
+  cloud:
+    loadbalancer:
+      ribbon.enabled: false
+
+endpoints:
+  url:
+    webpipes: http://localhost:8080/dim
+    chatgpt: http://localhost:8100
