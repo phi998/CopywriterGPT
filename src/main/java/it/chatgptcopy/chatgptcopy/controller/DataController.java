@@ -3,20 +3,22 @@ package it.chatgptcopy.chatgptcopy.controller;
 import it.chatgptcopy.chatgptcopy.adapters.WebpipesAdapter;
 import it.chatgptcopy.chatgptcopy.adapters.dto.DataDocument;
 import it.chatgptcopy.chatgptcopy.adapters.dto.OntologyItem;
+import it.chatgptcopy.chatgptcopy.adapters.dto.QueryResponse;
 import it.chatgptcopy.chatgptcopy.controller.dto.DocumentsSearchForm;
 import it.chatgptcopy.chatgptcopy.controller.dto.DocumentsSelectionForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 @Slf4j
 public class DataController {
 
@@ -34,6 +36,11 @@ public class DataController {
                                Model model) {
         log.info("getDocuments(): params={}", queryParams);
 
+        Map<String,List<String>> q = new HashMap<>();
+        for(Map.Entry<String,String> e: queryParams.entrySet()) {
+            q.put(e.getKey(), List.of(e.getValue()));
+        }
+
         int nResults = Integer.parseInt(queryParams.get(N_RESULTS_KEY));
         String collectionName = queryParams.get(TABLE_NAME_KEY);
         Long promptTemplateId = Long.parseLong(queryParams.get(PROMPT_TEMPLATE_KEY));
@@ -42,9 +49,10 @@ public class DataController {
         for(String label:labels) { documentsSearchForm.getQuery().putIfAbsent(label, ""); }
         documentsSearchForm.getQuery().putIfAbsent(N_RESULTS_KEY, String.valueOf(DEFAULT_N_RESULTS));
 
-        List<DataDocument> documents = this.webpipesAdapter.query(queryParams);
+        QueryResponse documents = this.webpipesAdapter.query(q, collectionName, nResults);
 
         model.addAttribute("documentsSearchForm", documentsSearchForm);
+        model.addAttribute("collectionName", collectionName);
         model.addAttribute("documentsForm", toDocumentsSelectionForm(documents));
         model.addAttribute("promptTemplateId", promptTemplateId);
 
@@ -53,9 +61,9 @@ public class DataController {
 
     /** PRIVATE METHODS */
 
-    private DocumentsSelectionForm toDocumentsSelectionForm(List<DataDocument> documents) {
+    private DocumentsSelectionForm toDocumentsSelectionForm(QueryResponse documents) {
         DocumentsSelectionForm dsf = new DocumentsSelectionForm();
-        documents.forEach(d -> dsf.addDocument(d.getId(), d.getFields()));
+        documents.getDocuments().forEach(d -> dsf.addDocument(d.getColumnName2Content().get("id"), d.getColumnName2Content()));
 
         return dsf;
     }

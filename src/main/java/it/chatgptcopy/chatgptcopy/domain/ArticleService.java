@@ -59,7 +59,8 @@ public class ArticleService {
      *
      * **/
 
-    private static Map<String,String> toCompactDocuments(List<DataDocument> documents, String separator) {
+    private Map<String,String> toCompactDocuments(List<DataDocument> documents, String separator) {
+        log.info("toCompactDocuments(): documents={}, separator={}", documents, separator);
         Map<String,String> compactDocuments = new HashMap<>();
 
         for(DataDocument document: documents) {
@@ -68,7 +69,7 @@ public class ArticleService {
                 String content = fieldName2content.getValue();
 
                 compactDocuments.putIfAbsent(fieldName, EMPTY_STRING);
-                compactDocuments.put(fieldName, compactDocuments.get(fieldName).equals(EMPTY_STRING)?content:separator+content);
+                compactDocuments.put(fieldName, compactDocuments.get(fieldName).equals(EMPTY_STRING)?content:compactDocuments.get(fieldName)+separator+content);
             }
         }
 

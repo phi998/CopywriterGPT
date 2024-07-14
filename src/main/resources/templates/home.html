@@ -38,7 +38,7 @@
         console.log(ontologies); // Questo stamperà la mappa dal backend nella console
 
         // Se vuoi lavorare con la mappa come oggetto JavaScript
-        var mapAsObject = JSON.parse(/*[[${ontologies ? ${#json.stringify(ontologies)} : '{}'}]]*/ '{}');
+        var mapAsObject = JSON.parse(/*[[${ontologies != null} ? '${#json.stringify(ontologies)}' : '{}']]*/ '{}');
         console.log(mapAsObject); // Questo stamperà la mappa convertita in oggetto JavaScript
 
         function updateModal(categoryId, categoryName) {
@@ -130,8 +130,8 @@
                 <div class="card" th:each="template : ${category.templates}">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" th:text="${template.name}">
-                                Prompt name
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <a th:href="@{'/query?collectionName=' + ${category.name} + '&n=20&promptTemplate=' + ${template.id}}" th:text="${template.name}">Prompt name</a>
                             </button>
                         </h5>
                     </div>

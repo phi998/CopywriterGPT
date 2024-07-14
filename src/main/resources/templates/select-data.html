@@ -67,6 +67,7 @@
                 <button class="btn btn-primary" type="submit">Search</button>
 
             </form>
+            <br>
 
         </div>
     </div>
@@ -75,10 +76,7 @@
 
         <div class="row">
 
-            <form th:action="@{'/article'}" th:object="${documentsForm}" method="post">
-                <input type="hidden" th:field="*{templateId}">
-                <input type="hidden" th:field="*{collectionName}">
-
+            <form th:action="@{'/article?collectionName=' + ${collectionName} + '&templateId=' + ${promptTemplateId}}" th:object="${documentsForm}" method="post">
                 <table class="table table-striped table-sm">
                     <thead>
                     <tr>
@@ -104,6 +102,8 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <button class="btn btn-primary" type="submit">Generate article</button>
             </form>
 
         </div>

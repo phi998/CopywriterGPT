@@ -27,12 +27,15 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
   cloud:
     loadbalancer:
       ribbon.enabled: false
 
 endpoints:
   url:
-    webpipes: http://localhost:8080/dim
+    webpipes: http://localhost:8080
     chatgpt: http://localhost:8100
+
+server:
+  port: 5050

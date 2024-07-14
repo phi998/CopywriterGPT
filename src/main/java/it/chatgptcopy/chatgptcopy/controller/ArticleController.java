@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 
 @Controller
 @Slf4j
@@ -30,7 +28,7 @@ public class ArticleController {
             @ModelAttribute("selectedDocuments")DocumentsSelectionForm documentsSelectionForm,
             Model model
             ) {
-        log.info("generateArticle()");
+        log.info("generateArticle(): selectedDocuments={}", documentsSelectionForm);
 
         List<DocumentResultEntry> selectedDocuments = documentsSelectionForm.getDocuments().stream().filter(DocumentResultEntry::isSelected).toList();
         List<String> documentsIds = selectedDocuments.stream().map(DocumentResultEntry::getDocumentId).toList();
