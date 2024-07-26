@@ -1,0 +1,31 @@
+
+volumes:
+  postgres_volume:
+
+services:
+
+  copywritergpt:
+    ports:
+      - 8080:8080
+    build: .
+    environment:
+      - SPRING_PROFILE=remote
+    restart: unless-stopped
+
+  chatgpt:
+    build: ./chatgpt-gateway
+    ports:
+      - "8100:5000"
+    environment:
+      - OPENAI_KEY=${OPENAI_API_KEY}
+
+  copywritergpt-db:
+    image: postgres
+    volumes:
+      - postgres_volume:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: copywritergpt

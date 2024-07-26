@@ -11,6 +11,34 @@ endpoints:
     chatgpt: http://chatgpt:5000
 
 ---
+spring:
+  config:
+    activate:
+      on-profile: remote
+  application:
+    name: ChatgptCopy
+  datasource:
+    username: postgres
+    url: jdbc:postgresql://copywritergpt-db:5432/copywritergpt
+    password: postgres
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: create-drop
+  cloud:
+    loadbalancer:
+      ribbon.enabled: false
+
+endpoints:
+  url:
+    webpipes: http://speedup2.dia.uniroma3.it:8080
+    chatgpt: http://chatgpt:5000
+
+---
 
 spring:
   config:
