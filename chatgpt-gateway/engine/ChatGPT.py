@@ -68,11 +68,15 @@ class ChatGPT:
                 for example in examples:
                     input_example = example["input"]
                     output_example = example["output"]
-                    messages.append(prompt_builder.build_prompt_example(input_example, output_example))
+                    # messages.append(prompt_builder.build_prompt_example(input_example, output_example))
+                    messages.append({"role": Role.USER.value, "content": input_example})
+                    messages.append({"role": Role.ASSISTANT.value, "content": output_example})
 
                 messages.append({"role": Role.ASSISTANT.value, "content": DefaultAgentAnswers.EXAMPLE_PROVIDED.value})
 
             messages.append({"role": Role.USER.value, "content": prompt_input})
+
+        #app.logger.info(messages)
 
         response = openai.ChatCompletion.create(
             model=self.__model.value,

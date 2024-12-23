@@ -36,7 +36,7 @@ spring:
 endpoints:
   url:
     webpipes: http://speedup2.dia.uniroma3.it:8080
-    chatgpt: http://chatgpt:5000
+    chatgpt: http://localhost:8100
 
 ---
 

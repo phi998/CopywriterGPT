@@ -17,7 +17,7 @@ services:
     ports:
       - "8100:5000"
     environment:
-      - OPENAI_KEY=${OPENAI_API_KEY}
+      - OPENAI_KEY=YOUR-SECRET
 
   copywritergpt-db:
     image: postgres
